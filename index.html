@@ -78,6 +78,15 @@
       background: var(--bg);
       border: 1px solid var(--border);
     }
+    .result-secondary {
+      margin-top: 0.5rem;
+    }
+    .result-pct {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 0.2rem;
+      font-variant-numeric: tabular-nums;
+    }
     .result-label {
       font-size: 0.75rem;
       text-transform: uppercase;
@@ -90,13 +99,16 @@
       font-weight: 700;
       font-variant-numeric: tabular-nums;
     }
-    .result-value.profit {
+    .result-value.profit,
+    .result-pct.profit {
       color: var(--profit);
     }
-    .result-value.loss {
+    .result-value.loss,
+    .result-pct.loss {
       color: var(--loss);
     }
-    .result-value.neutral {
+    .result-value.neutral,
+    .result-pct.neutral {
       color: var(--muted);
     }
     .error {
@@ -153,6 +165,11 @@
     <div class="result" aria-live="polite">
       <div class="result-label">Profit / loss</div>
       <div id="profit-display" class="result-value neutral">—</div>
+      <div id="pct-display" class="result-pct neutral"></div>
+    </div>
+    <div class="result result-secondary" aria-live="polite">
+      <div class="result-label">Total value at target</div>
+      <div id="total-display" class="result-value neutral">—</div>
     </div>
     <div id="error-msg" class="error" hidden></div>
     <p class="formula">
@@ -171,6 +188,8 @@
       const currentEl = document.getElementById("current");
       const targetEl = document.getElementById("target");
       const profitDisplay = document.getElementById("profit-display");
+      const pctDisplay = document.getElementById("pct-display");
+      const totalDisplay = document.getElementById("total-display");
       const errorMsg = document.getElementById("error-msg");
 
       function parseNum(el) {
@@ -197,6 +216,10 @@
         if ([invested, current, target].some((x) => Number.isNaN(x))) {
           profitDisplay.textContent = "—";
           profitDisplay.className = "result-value neutral";
+          pctDisplay.textContent = "";
+          pctDisplay.className = "result-pct neutral";
+          totalDisplay.textContent = "—";
+          totalDisplay.className = "result-value neutral";
           return;
         }
 
@@ -205,6 +228,10 @@
           errorMsg.hidden = false;
           profitDisplay.textContent = "—";
           profitDisplay.className = "result-value neutral";
+          pctDisplay.textContent = "";
+          pctDisplay.className = "result-pct neutral";
+          totalDisplay.textContent = "—";
+          totalDisplay.className = "result-value neutral";
           return;
         }
 
@@ -213,14 +240,27 @@
           errorMsg.hidden = false;
           profitDisplay.textContent = "—";
           profitDisplay.className = "result-value neutral";
+          pctDisplay.textContent = "";
+          pctDisplay.className = "result-pct neutral";
+          totalDisplay.textContent = "—";
+          totalDisplay.className = "result-value neutral";
           return;
         }
 
         const profit = (invested / current) * target - invested;
+        const pct = invested > 0 ? (profit / invested) * 100 : 0;
+        const totalValue = invested + profit;
+        const sign = profit >= 0 ? "+" : "";
+        const colorClass = profit > 0 ? "profit" : profit < 0 ? "loss" : "neutral";
 
-        profitDisplay.textContent = (profit >= 0 ? "+" : "") + formatMoney(profit);
-        profitDisplay.className =
-          "result-value " + (profit > 0 ? "profit" : profit < 0 ? "loss" : "neutral");
+        profitDisplay.textContent = sign + formatMoney(profit);
+        profitDisplay.className = "result-value " + colorClass;
+
+        pctDisplay.textContent = sign + pct.toFixed(2) + "%";
+        pctDisplay.className = "result-pct " + colorClass;
+
+        totalDisplay.textContent = formatMoney(totalValue);
+        totalDisplay.className = "result-value " + colorClass;
       }
 
       [investedEl, currentEl, targetEl].forEach((el) => {
