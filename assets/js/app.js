@@ -6,11 +6,13 @@
   const activeSection = document.getElementById("active-section");
   const headerSection = document.getElementById("header-section");
   const settingsModal = document.getElementById("settings-modal");
+  const dialogModal = document.getElementById("dialog-modal");
   document.getElementById("cpy-year").textContent = new Date().getFullYear();
 
   const syncTimers = new Map();
   const syncStatus = new Map();
   let modalOpen = false;
+  let dialogState = null;
 
   const GEAR_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -145,21 +147,39 @@
     let totalInvested = 0;
     let profitCurrent = 0;
     let profitTarget = 0;
+    let totalValueCurrent = 0;
+    let totalValueTarget = 0;
     let hasCurrent = false;
     let hasTarget = false;
     for (const entry of coin.entries) {
       if (entry.invested !== null) totalInvested += entry.invested;
-      const cur = calcEntry(entry, coin.currentPrice);
+      if (entry.status === "closed" && entry.closingProfit !== null) {
+        profitCurrent += entry.closingProfit;
+        hasCurrent = true;
+        if (entry.invested !== null) totalValueCurrent += entry.invested + entry.closingProfit;
+      } else {
+        const cur = calcEntry(entry, coin.currentPrice);
+        if (cur.ok) {
+          profitCurrent += cur.profit;
+          totalValueCurrent += cur.totalValue;
+          hasCurrent = true;
+        }
+      }
       const tgt = calcEntry(entry, entry.targetPrice);
-      if (cur.ok) { profitCurrent += cur.profit; hasCurrent = true; }
-      if (tgt.ok) { profitTarget += tgt.profit; hasTarget = true; }
+      if (tgt.ok) {
+        profitTarget += tgt.profit;
+        totalValueTarget += tgt.totalValue;
+        hasTarget = true;
+      }
     }
     return {
       totalInvested: totalInvested,
       profitCurrent: hasCurrent ? profitCurrent : null,
       pctCurrent: hasCurrent && totalInvested > 0 ? (profitCurrent / totalInvested) * 100 : null,
+      totalValueCurrent: hasCurrent ? totalValueCurrent : null,
       profitTarget: hasTarget ? profitTarget : null,
-      pctTarget: hasTarget && totalInvested > 0 ? (profitTarget / totalInvested) * 100 : null
+      pctTarget: hasTarget && totalInvested > 0 ? (profitTarget / totalInvested) * 100 : null,
+      totalValueTarget: hasTarget ? totalValueTarget : null
     };
   }
 
@@ -326,27 +346,33 @@
   function pullFromSheet() {
     const url = getSheetUrl();
     if (!url) {
-      alert("Enter Apps Script URL first.");
+      showAlert("Enter Apps Script URL first.");
       return;
     }
-    if (state.coins.length && !confirm("Replace local data with data from Google Sheet?")) return;
-    setPullStatus("pulling");
-    fetch(url)
-      .then(function (res) { return res.json(); })
-      .then(function (data) {
-        if (!data.ok) {
+    function doPull() {
+      setPullStatus("pulling");
+      fetch(url)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (!data.ok) {
+            setPullStatus("error");
+            showAlert(data.error || "Pull failed.");
+            return;
+          }
+          applySheetRows(data.rows || []);
+          setPullStatus("done");
+          setTimeout(function () { setPullStatus(""); }, 3000);
+        })
+        .catch(function () {
           setPullStatus("error");
-          alert(data.error || "Pull failed.");
-          return;
-        }
-        applySheetRows(data.rows || []);
-        setPullStatus("done");
-        setTimeout(function () { setPullStatus(""); }, 3000);
-      })
-      .catch(function () {
-        setPullStatus("error");
-        alert("Could not reach Google Sheet. Check URL and redeploy the script.");
-      });
+          showAlert("Could not reach Google Sheet. Check URL and redeploy the script.");
+        });
+    }
+    if (state.coins.length) {
+      showConfirm("Replace local data with data from Google Sheet?", doPull);
+    } else {
+      doPull();
+    }
   }
 
   function renderHeader() {
@@ -393,6 +419,49 @@
       settingsModal.classList.add("hidden");
       settingsModal.setAttribute("aria-hidden", "true");
     }
+  }
+
+  function renderDialogModal() {
+    if (!dialogModal || !dialogState) return;
+    const isConfirm = dialogState.type === "confirm";
+    const title = isConfirm ? "Confirm" : "Notice";
+    const actions = isConfirm
+      ? '<div class="dialog-actions"><button type="button" class="btn-ghost" data-action="close-dialog">Cancel</button>' +
+        '<button type="button" class="btn" data-action="dialog-confirm">Confirm</button></div>'
+      : '<div class="dialog-actions"><button type="button" class="btn" data-action="dialog-ok">OK</button></div>';
+    dialogModal.innerHTML =
+      '<div class="modal-backdrop" data-action="close-dialog"></div>' +
+      '<div class="modal" role="dialog" aria-labelledby="dialog-title">' +
+      '<div class="modal-header">' +
+      '<h2 id="dialog-title">' + title + "</h2>" +
+      '<button type="button" class="btn-icon modal-close" data-action="close-dialog" aria-label="Close">&times;</button>' +
+      "</div>" +
+      '<p class="dialog-message">' + escapeHtml(dialogState.message) + "</p>" +
+      actions +
+      "</div>";
+    dialogModal.classList.remove("hidden");
+    dialogModal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeDialog() {
+    dialogState = null;
+    if (dialogModal) {
+      dialogModal.classList.add("hidden");
+      dialogModal.setAttribute("aria-hidden", "true");
+      dialogModal.innerHTML = "";
+    }
+  }
+
+  function showAlert(message) {
+    if (modalOpen) closeSettings();
+    dialogState = { type: "alert", message: message };
+    renderDialogModal();
+  }
+
+  function showConfirm(message, onConfirm) {
+    if (modalOpen) closeSettings();
+    dialogState = { type: "confirm", message: message, onConfirm: onConfirm };
+    renderDialogModal();
   }
 
   function renderCreate() {
@@ -491,27 +560,31 @@
 
   function renderTotals(coin) {
     const agg = calcAggregates(coin);
-    function aggBlock(label, profit, pct) {
+    function aggBlock(label, profit, pct, totalValue) {
       if (profit === null) {
         return '<div class="result result-compact"><div class="result-label">' + label + '</div><span class="result-value neutral">—</span></div>';
       }
       const sign = profit >= 0 ? "+" : "";
       const cls = colorClass(profit);
       const pctStr = pct !== null ? '<div class="result-pct ' + cls + '">' + sign + pct.toFixed(2) + "%</div>" : "";
+      const totalLeft = totalValue !== null
+        ? '<div class="result-total">Total left: ' + formatMoney(totalValue) + "</div>"
+        : "";
       return (
         '<div class="result result-compact">' +
         '<div class="result-label">' + label + "</div>" +
         '<span class="result-value ' + cls + '">' + sign + formatMoney(profit) + "</span>" +
         pctStr +
         '<div class="result-total">Invested: ' + formatMoney(agg.totalInvested) + "</div>" +
+        totalLeft +
         "</div>"
       );
     }
     return (
       '<div class="totals"><div class="section-title">Combined totals</div>' +
       '<div class="totals-grid">' +
-      aggBlock("At current", agg.profitCurrent, agg.pctCurrent) +
-      aggBlock("At target", agg.profitTarget, agg.pctTarget) +
+      aggBlock("At current", agg.profitCurrent, agg.pctCurrent, agg.totalValueCurrent) +
+      aggBlock("At target", agg.profitTarget, agg.pctTarget, agg.totalValueTarget) +
       "</div></div>"
     );
   }
@@ -525,7 +598,10 @@
     let html =
       '<div class="section">' +
       '<div class="active-toolbar">' +
+      '<div class="active-toolbar-main">' +
       '<h2 class="active-coin-name">' + escapeHtml(coin.name) + "</h2>" +
+      renderTotals(coin) +
+      "</div>" +
       '<div class="current-price-wrap"><label for="current-price">Current price</label>' +
       '<input type="number" id="current-price" data-field="currentPrice" inputmode="decimal" min="0" step="any" placeholder="55" value="' + inputVal(coin.currentPrice) + '" /></div>' +
       "</div>" +
@@ -533,7 +609,7 @@
       '<button type="button" class="btn" data-action="add-entry">+ Add</button></div>' +
       '<div class="entries-grid">';
     coin.entries.forEach(function (entry, i) { html += renderEntry(coin, entry, i); });
-    html += "</div>" + renderTotals(coin) + "</div>";
+    html += "</div></div>";
     activeSection.innerHTML = html;
   }
 
@@ -618,6 +694,23 @@
       return;
     }
 
+    if (action === "close-dialog") {
+      closeDialog();
+      return;
+    }
+
+    if (action === "dialog-ok") {
+      closeDialog();
+      return;
+    }
+
+    if (action === "dialog-confirm") {
+      const cb = dialogState && dialogState.onConfirm;
+      closeDialog();
+      if (cb) cb();
+      return;
+    }
+
     if (action === "create-coin") {
       const input = document.getElementById("coin-name-input");
       const name = input.value.trim();
@@ -644,14 +737,16 @@
       e.stopPropagation();
       const id = btn.dataset.coinId;
       const coin = state.coins.find(function (c) { return c.id === id; });
-      if (!coin || !confirm('Delete "' + coin.name + '" and all its instances?')) return;
-      syncDeleteCoinEntries(coin).then(function () {
-        state.coins = state.coins.filter(function (c) { return c.id !== id; });
-        if (state.activeCoinId === id) {
-          state.activeCoinId = state.coins[0]?.id || null;
-        }
-        saveState();
-        render();
+      if (!coin) return;
+      showConfirm('Delete "' + coin.name + '" and all its instances?', function () {
+        syncDeleteCoinEntries(coin).then(function () {
+          state.coins = state.coins.filter(function (c) { return c.id !== id; });
+          if (state.activeCoinId === id) {
+            state.activeCoinId = state.coins[0]?.id || null;
+          }
+          saveState();
+          render();
+        });
       });
       return;
     }
@@ -660,13 +755,14 @@
       const coin = getActiveCoin();
       if (!coin || coin.entries.length <= 1) return;
       const entryId = btn.dataset.entryId;
-      if (!confirm("Remove this instance?")) return;
-      syncDeleteEntry(entryId).then(function () {
-        coin.entries = coin.entries.filter(function (en) { return en.id !== entryId; });
-        syncStatus.delete(entryId);
-        saveState();
-        renderActive();
-        renderHistory();
+      showConfirm("Remove this instance?", function () {
+        syncDeleteEntry(entryId).then(function () {
+          coin.entries = coin.entries.filter(function (en) { return en.id !== entryId; });
+          syncStatus.delete(entryId);
+          saveState();
+          renderActive();
+          renderHistory();
+        });
       });
       return;
     }
@@ -679,17 +775,18 @@
       if (!entry || entry.status === "closed") return;
       const cur = calcEntry(entry, coin.currentPrice);
       if (!cur.ok) {
-        alert("Enter invested, entry price, and current price before closing.");
+        showAlert("Enter invested, entry price, and current price before closing.");
         return;
       }
-      if (!confirm("Close this entry at current price?")) return;
-      entry.status = "closed";
-      entry.closedAt = new Date().toISOString();
-      entry.closingProfit = cur.profit;
-      entry.closingPct = cur.pct;
-      saveState();
-      renderActive();
-      syncEntry(coin, entry, "close");
+      showConfirm("Close this entry at current price?", function () {
+        entry.status = "closed";
+        entry.closedAt = new Date().toISOString();
+        entry.closingProfit = cur.profit;
+        entry.closingPct = cur.pct;
+        saveState();
+        renderActive();
+        syncEntry(coin, entry, "close");
+      });
       return;
     }
 

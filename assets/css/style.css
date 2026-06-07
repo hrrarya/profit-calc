@@ -144,6 +144,7 @@ input:focus {
   color: var(--loss);
   padding: 0.35rem 0.6rem;
   font-size: 0.75rem;
+  cursor: pointer;
 }
 .create-row { display: flex; gap: 0.5rem; align-items: flex-start; }
 .create-row input { margin-bottom: 0; flex: 1; }
@@ -169,13 +170,18 @@ input:focus {
 .empty-msg { font-size: 0.8rem; color: var(--muted); margin: 0; }
 .active-toolbar {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.active-toolbar-main {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
   flex-wrap: wrap;
 }
-.active-coin-name { font-size: 1rem; font-weight: 600; margin: 0; }
+.active-coin-name { font-size: 1rem; font-weight: 600; margin: 0; flex-shrink: 0; }
 .current-price-wrap { flex: 1; min-width: 140px; max-width: 200px; }
 .current-price-wrap input { margin-bottom: 0; }
 .entries-grid {
@@ -223,8 +229,11 @@ input:focus {
 .result-total { font-size: 0.65rem; color: var(--muted); margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
 .entry-error { font-size: 0.7rem; color: var(--loss); margin-top: 0.35rem; }
 .active-actions { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
-.totals { margin-top: 0.5rem; }
+.totals { flex: 1; min-width: 200px; margin-top: 0; }
+.totals .section-title { margin-bottom: 0.35rem; }
 .totals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+.dialog-message { font-size: 0.875rem; line-height: 1.5; margin: 0 0 1rem; color: var(--text); }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
 .formula { margin-top: 0.75rem; font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
 code {
   font-family: ui-monospace, monospace;
@@ -290,10 +299,22 @@ code {
   .entries-grid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 800px) {
-  .entries-grid { grid-template-columns: repeat(2, 1fr); }
+  .entries-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .entries-grid::-webkit-scrollbar { height: 6px; }
+  .entries-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .entry-row { flex: 0 0 100%; scroll-snap-align: start; }
+  .active-toolbar-main { flex-direction: column; }
+  .totals { min-width: 0; width: 100%; }
 }
 @media (max-width: 560px) {
-  .entries-grid { grid-template-columns: 1fr; }
   .entry-results, .totals-grid { grid-template-columns: 1fr; }
   .coin-item { max-width: none; flex: 1 1 100%; }
 }
