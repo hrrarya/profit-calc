@@ -25,6 +25,41 @@ var HEADERS = [
   "Profit/loss at closing"
 ];
 
+function doGet() {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) {
+      return jsonResponse({ ok: true, rows: [] });
+    }
+    var data = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+    var rows = data.map(function (row) {
+      return {
+        entryId: String(row[0] || ""),
+        coinName: String(row[1] || ""),
+        invested: parseNum(row[2]),
+        entryPrice: parseNum(row[3]),
+        targetPrice: parseNum(row[4]),
+        profitLoss: parseNum(row[5]),
+        percentage: parseNum(row[6]),
+        totalAtTarget: parseNum(row[7]),
+        status: String(row[8] || "open"),
+        closingDate: row[9] ? String(row[9]) : "",
+        closingProfitLoss: parseNum(row[10])
+      };
+    }).filter(function (r) { return r.entryId; });
+    return jsonResponse({ ok: true, rows: rows });
+  } catch (err) {
+    return jsonResponse({ ok: false, error: String(err.message || err) });
+  }
+}
+
+function parseNum(val) {
+  if (val === "" || val == null) return null;
+  var n = Number(val);
+  return isNaN(n) ? null : n;
+}
+
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);

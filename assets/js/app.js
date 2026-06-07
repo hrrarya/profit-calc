@@ -260,14 +260,101 @@
     }));
   }
 
+  let pullStatus = "";
+
+  function setPullStatus(status) {
+    pullStatus = status;
+    const el = document.getElementById("pull-status");
+    if (!el) return;
+    el.className = "pull-status pull-" + status;
+    el.textContent = status === "pulling" ? "Pulling…" : status === "done" ? "Synced" : status === "error" ? "Pull failed" : "";
+  }
+
+  function sheetRowToEntry(row) {
+    const invested = row.invested;
+    const closingProfit = row.closingProfitLoss;
+    const isClosed = row.status === "closed";
+    let closedAt = null;
+    if (row.closingDate) {
+      const d = new Date(row.closingDate);
+      if (!Number.isNaN(d.getTime())) closedAt = d.toISOString();
+    }
+    return migrateEntry({
+      id: row.entryId || newId(),
+      invested: invested,
+      entryPrice: row.entryPrice,
+      targetPrice: row.targetPrice,
+      createdAt: closedAt || new Date().toISOString(),
+      status: isClosed ? "closed" : "open",
+      closedAt: closedAt,
+      closingProfit: closingProfit,
+      closingPct: invested && closingProfit != null ? (closingProfit / invested) * 100 : null
+    });
+  }
+
+  function applySheetRows(rows) {
+    const coinMap = new Map();
+    for (const row of rows) {
+      if (!row.coinName) continue;
+      let coin = coinMap.get(row.coinName);
+      if (!coin) {
+        coin = {
+          id: newId(),
+          name: row.coinName,
+          currentPrice: null,
+          createdAt: new Date().toISOString(),
+          entries: []
+        };
+        coinMap.set(row.coinName, coin);
+      }
+      coin.entries.push(sheetRowToEntry(row));
+    }
+    state.coins = Array.from(coinMap.values());
+    state.activeCoinId = state.coins[0]?.id || null;
+    syncStatus.clear();
+    saveState();
+    render();
+  }
+
+  function pullFromSheet() {
+    const url = getSheetUrl();
+    if (!url) {
+      alert("Enter Apps Script URL first.");
+      return;
+    }
+    if (state.coins.length && !confirm("Replace local data with data from Google Sheet?")) return;
+    setPullStatus("pulling");
+    fetch(url)
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data.ok) {
+          setPullStatus("error");
+          alert(data.error || "Pull failed.");
+          return;
+        }
+        applySheetRows(data.rows || []);
+        setPullStatus("done");
+        setTimeout(function () { setPullStatus(""); }, 3000);
+      })
+      .catch(function () {
+        setPullStatus("error");
+        alert("Could not reach Google Sheet. Check URL and redeploy the script.");
+      });
+  }
+
   function renderSettings() {
     if (!settingsSection) return;
     settingsSection.innerHTML =
       '<div class="section" style="margin-top:0;padding-top:0;border-top:none">' +
       '<div class="section-title">Google Sheets sync</div>' +
       '<label for="sheet-url-input">Apps Script web app URL</label>' +
+      '<div class="settings-row">' +
       '<input type="text" id="sheet-url-input" data-field="sheetUrl" placeholder="https://script.google.com/macros/s/…/exec" value="' + escapeHtml(getSheetUrl()) + '" />' +
-      '<p class="settings-hint">Paste your deployed Google Apps Script URL. Entries auto-sync on change.</p>' +
+      '<button type="button" class="btn" data-action="pull-sheet">Sync</button>' +
+      '<span id="pull-status" class="pull-status' + (pullStatus ? " pull-" + pullStatus : "") + '">' +
+      (pullStatus === "pulling" ? "Pulling…" : pullStatus === "done" ? "Synced" : pullStatus === "error" ? "Pull failed" : "") +
+      "</span></div>" +
+      '<p class="settings-hint">Paste your deployed Google Apps Script URL. Entries auto-sync on change. Click Sync to pull all data from the sheet.</p>' +
       "</div>";
   }
 
@@ -477,6 +564,11 @@
     const btn = e.target.closest("[data-action]");
     if (!btn) return;
     const action = btn.dataset.action;
+
+    if (action === "pull-sheet") {
+      pullFromSheet();
+      return;
+    }
 
     if (action === "create-coin") {
       const input = document.getElementById("coin-name-input");

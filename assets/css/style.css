@@ -190,6 +190,12 @@ code {
 .copyright a { color: var(--accent); text-decoration: none; }
 .copyright a:hover { text-decoration: underline; }
 .settings-hint { font-size: 0.7rem; color: var(--muted); margin: 0.35rem 0 0; line-height: 1.4; }
+.settings-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.settings-row input { margin-bottom: 0; flex: 1; min-width: 200px; }
+.pull-status { font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+.pull-pulling { color: var(--accent); }
+.pull-done { color: var(--profit); }
+.pull-error { color: var(--loss); }
 .entry-actions { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
 .sync-badge {
   font-size: 0.6rem;
