@@ -233,7 +233,7 @@
     syncTimers.set(key, setTimeout(function () {
       syncTimers.delete(key);
       syncEntry(coin, entry, "upsert");
-    }, 400));
+    }, 500));
   }
 
   function syncAllOpenEntries(coin) {

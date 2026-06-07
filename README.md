@@ -33,7 +33,7 @@ The sheet gets headers on first sync. Each instance row includes coin name, inve
 
 ## Usage
 
-- Entries auto-sync to the sheet on every field change (400ms debounce)
+- Entries auto-sync to the sheet on every field change (500ms debounce)
 - Click **Sync** to pull all rows from the sheet into the app (replaces local data)
 - Click **Close** on an instance to mark it closed and record closing P/L
 - **Remove** deletes the row from the sheet
