@@ -4,11 +4,18 @@
   const createSection = document.getElementById("create-section");
   const historySection = document.getElementById("history-section");
   const activeSection = document.getElementById("active-section");
-  const settingsSection = document.getElementById("settings-section");
+  const headerSection = document.getElementById("header-section");
+  const settingsModal = document.getElementById("settings-modal");
   document.getElementById("cpy-year").textContent = new Date().getFullYear();
 
   const syncTimers = new Map();
   const syncStatus = new Map();
+  let modalOpen = false;
+
+  const GEAR_ICON =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>' +
+    '<circle cx="12" cy="12" r="3"/></svg>';
 
   function defaultState() {
     return { coins: [], activeCoinId: null };
@@ -266,7 +273,7 @@
     pullStatus = status;
     const el = document.getElementById("pull-status");
     if (!el) return;
-    el.className = "pull-status pull-" + status;
+    el.className = status ? "pull-status pull-" + status : "pull-status";
     el.textContent = status === "pulling" ? "Pulling…" : status === "done" ? "Synced" : status === "error" ? "Pull failed" : "";
   }
 
@@ -342,20 +349,50 @@
       });
   }
 
-  function renderSettings() {
-    if (!settingsSection) return;
-    settingsSection.innerHTML =
-      '<div class="section" style="margin-top:0;padding-top:0;border-top:none">' +
-      '<div class="section-title">Google Sheets sync</div>' +
-      '<label for="sheet-url-input">Apps Script web app URL</label>' +
-      '<div class="settings-row">' +
-      '<input type="text" id="sheet-url-input" data-field="sheetUrl" placeholder="https://script.google.com/macros/s/…/exec" value="' + escapeHtml(getSheetUrl()) + '" />' +
+  function renderHeader() {
+    if (!headerSection) return;
+    headerSection.innerHTML =
+      '<div class="card-header">' +
+      '<h1>Profit calculator</h1>' +
+      '<div class="header-actions">' +
       '<button type="button" class="btn" data-action="pull-sheet">Sync</button>' +
       '<span id="pull-status" class="pull-status' + (pullStatus ? " pull-" + pullStatus : "") + '">' +
       (pullStatus === "pulling" ? "Pulling…" : pullStatus === "done" ? "Synced" : pullStatus === "error" ? "Pull failed" : "") +
-      "</span></div>" +
-      '<p class="settings-hint">Paste your deployed Google Apps Script URL. Entries auto-sync on change. Click Sync to pull all data from the sheet.</p>' +
+      "</span>" +
+      '<button type="button" class="btn-icon" data-action="open-settings" aria-label="Settings">' + GEAR_ICON + "</button>" +
+      "</div></div>";
+  }
+
+  function renderSettingsModal() {
+    if (!settingsModal) return;
+    settingsModal.innerHTML =
+      '<div class="modal-backdrop" data-action="close-settings"></div>' +
+      '<div class="modal" role="dialog" aria-labelledby="settings-title">' +
+      '<div class="modal-header">' +
+      '<h2 id="settings-title">Settings</h2>' +
+      '<button type="button" class="btn-icon modal-close" data-action="close-settings" aria-label="Close">&times;</button>' +
+      "</div>" +
+      '<label for="sheet-url-input">Apps Script web app URL</label>' +
+      '<input type="text" id="sheet-url-input" data-field="sheetUrl" placeholder="https://script.google.com/macros/s/…/exec" value="' + escapeHtml(getSheetUrl()) + '" />' +
+      '<p class="settings-hint">Paste your deployed Google Apps Script URL. Entries auto-sync on change.</p>' +
       "</div>";
+    settingsModal.classList.toggle("hidden", !modalOpen);
+    settingsModal.setAttribute("aria-hidden", modalOpen ? "false" : "true");
+  }
+
+  function openSettings() {
+    modalOpen = true;
+    renderSettingsModal();
+    const input = document.getElementById("sheet-url-input");
+    if (input) input.focus();
+  }
+
+  function closeSettings() {
+    modalOpen = false;
+    if (settingsModal) {
+      settingsModal.classList.add("hidden");
+      settingsModal.setAttribute("aria-hidden", "true");
+    }
   }
 
   function renderCreate() {
@@ -505,10 +542,11 @@
   }
 
   function render() {
-    renderSettings();
+    renderHeader();
     renderCreate();
     renderHistory();
     renderActive();
+    if (modalOpen) renderSettingsModal();
   }
 
   function updateEntryResults(coin, entry) {
@@ -567,6 +605,16 @@
 
     if (action === "pull-sheet") {
       pullFromSheet();
+      return;
+    }
+
+    if (action === "open-settings") {
+      openSettings();
+      return;
+    }
+
+    if (action === "close-settings") {
+      closeSettings();
       return;
     }
 
@@ -692,4 +740,5 @@
   });
 
   render();
+  renderSettingsModal();
 })();

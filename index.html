@@ -8,12 +8,12 @@
 </head>
 <body>
   <div class="card" id="app">
-    <h1>Profit calculator</h1>
+    <div id="header-section"></div>
     <p class="sub">Create coin instances, track multiple entries, and see live P/L at current and target prices.</p>
-    <div id="settings-section"></div>
     <div id="create-section"></div>
     <div id="history-section"></div>
     <div id="active-section"></div>
+    <div id="settings-modal" class="modal-overlay hidden" aria-hidden="true"></div>
     <p class="formula">
       Formula:<br />
       <code>((invested ÷ entry_price) × price) − invested = profit</code>
