@@ -168,21 +168,15 @@ input:focus {
 .coin-item-name { font-weight: 600; font-size: 0.8rem; }
 .coin-item-meta { font-size: 0.65rem; color: var(--muted); margin-top: 0.1rem; }
 .empty-msg { font-size: 0.8rem; color: var(--muted); margin: 0; }
-.active-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+.active-toolbar { margin-bottom: 0.5rem; }
 .active-toolbar-main {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
+  flex-direction: column;
 }
 .active-coin-name { font-size: 1rem; font-weight: 600; margin: 0; flex-shrink: 0; }
-.current-price-wrap { flex: 1; min-width: 140px; max-width: 200px; }
+.current-price-wrap { flex: 0 0 auto; min-width: 140px; max-width: 200px; }
 .current-price-wrap input { margin-bottom: 0; }
 .entries-grid {
   display: grid;
@@ -310,7 +304,7 @@ code {
   }
   .entries-grid::-webkit-scrollbar { height: 6px; }
   .entries-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  .entry-row { flex: 0 0 100%; scroll-snap-align: start; }
+  .entry-row { flex: 0 0 90%; scroll-snap-align: start; }
   .active-toolbar-main { flex-direction: column; }
   .totals { min-width: 0; width: 100%; }
 }

@@ -600,11 +600,10 @@
       '<div class="active-toolbar">' +
       '<div class="active-toolbar-main">' +
       '<h2 class="active-coin-name">' + escapeHtml(coin.name) + "</h2>" +
-      renderTotals(coin) +
-      "</div>" +
       '<div class="current-price-wrap"><label for="current-price">Current price</label>' +
       '<input type="number" id="current-price" data-field="currentPrice" inputmode="decimal" min="0" step="any" placeholder="55" value="' + inputVal(coin.currentPrice) + '" /></div>' +
-      "</div>" +
+      renderTotals(coin) +
+      "</div></div>" +
       '<div class="active-actions"><div class="section-title" style="margin:0">Instances</div>' +
       '<button type="button" class="btn" data-action="add-entry">+ Add</button></div>' +
       '<div class="entries-grid">';
