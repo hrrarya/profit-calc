@@ -15,9 +15,7 @@
       --profit: #22c55e;
       --loss: #ef4444;
     }
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
@@ -25,38 +23,23 @@
       background: var(--bg);
       color: var(--text);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 1.5rem;
     }
     .card {
       width: 100%;
-      max-width: 420px;
+      max-width: 720px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.75rem;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
     }
-    h1 {
-      margin: 0 0 0.5rem;
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-    .sub {
-      margin: 0 0 1.5rem;
-      font-size: 0.875rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-    label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-bottom: 0.35rem;
-      color: var(--muted);
-    }
-    input {
+    h1 { margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 600; }
+    .sub { margin: 0 0 1.25rem; font-size: 0.875rem; color: var(--muted); line-height: 1.45; }
+    label { display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.35rem; color: var(--muted); }
+    input[type="text"], input[type="number"] {
       width: 100%;
       padding: 0.65rem 0.75rem;
       margin-bottom: 1rem;
@@ -71,57 +54,108 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
     }
-    .result {
-      margin-top: 0.5rem;
-      padding: 1rem;
-      border-radius: 8px;
-      background: var(--bg);
-      border: 1px solid var(--border);
+    .section {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
     }
-    .result-secondary {
-      margin-top: 0.5rem;
-    }
-    .result-pct {
-      font-size: 0.85rem;
-      font-weight: 500;
-      margin-top: 0.2rem;
-      font-variant-numeric: tabular-nums;
-    }
-    .result-label {
-      font-size: 0.75rem;
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--muted);
-      margin-bottom: 0.35rem;
+      margin: 0 0 0.75rem;
     }
-    .result-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-    .result-value.profit,
-    .result-pct.profit {
-      color: var(--profit);
-    }
-    .result-value.loss,
-    .result-pct.loss {
-      color: var(--loss);
-    }
-    .result-value.neutral,
-    .result-pct.neutral {
-      color: var(--muted);
-    }
-    .error {
-      margin-top: 0.75rem;
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
       font-size: 0.875rem;
-      color: var(--loss);
+      font-weight: 500;
+      cursor: pointer;
     }
-    .formula {
-      margin-top: 1.25rem;
-      font-size: 0.75rem;
+    .btn:hover { filter: brightness(1.1); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
       color: var(--muted);
-      line-height: 1.5;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.75rem;
     }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--loss);
+      color: var(--loss);
+      padding: 0.35rem 0.6rem;
+      font-size: 0.75rem;
+    }
+    .create-row { display: flex; gap: 0.5rem; align-items: flex-start; }
+    .create-row input { margin-bottom: 0; flex: 1; }
+    .coin-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto; }
+    .coin-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      cursor: pointer;
+    }
+    .coin-item:hover { border-color: var(--accent); }
+    .coin-item.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25); }
+    .coin-item-info { flex: 1; min-width: 0; }
+    .coin-item-name { font-weight: 600; font-size: 0.9rem; }
+    .coin-item-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+    .empty-msg { font-size: 0.875rem; color: var(--muted); margin: 0; }
+    .active-header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-bottom: 1rem; }
+    .active-coin-name { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    .entry-row {
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+    }
+    .entry-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .entry-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+    .entry-fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .entry-fields label { margin-bottom: 0.25rem; }
+    .entry-fields input { margin-bottom: 0; }
+    .entry-results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .result {
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .result-compact .result-value { font-size: 1.1rem; }
+    .result-pct { font-size: 0.85rem; font-weight: 500; margin-top: 0.2rem; font-variant-numeric: tabular-nums; }
+    .result-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.35rem; }
+    .result-value { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .result-value.profit, .result-pct.profit { color: var(--profit); }
+    .result-value.loss, .result-pct.loss { color: var(--loss); }
+    .result-value.neutral, .result-pct.neutral { color: var(--muted); }
+    .result-total { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; font-variant-numeric: tabular-nums; }
+    .entry-error { font-size: 0.8rem; color: var(--loss); margin-top: 0.5rem; }
+    .totals { margin-top: 1rem; }
+    .totals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .formula { margin-top: 1.25rem; font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
     code {
       font-family: ui-monospace, monospace;
       font-size: 0.7rem;
@@ -141,40 +175,24 @@
       text-align: center;
       line-height: 1.65;
     }
-    .copyright a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .copyright a:hover {
-      text-decoration: underline;
+    .copyright a { color: var(--accent); text-decoration: none; }
+    .copyright a:hover { text-decoration: underline; }
+    @media (max-width: 560px) {
+      .entry-fields { grid-template-columns: 1fr; }
+      .entry-results, .totals-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="card" id="app">
     <h1>Profit calculator</h1>
-    <p class="sub">Enter invested amount, current price per unit, and your target price.</p>
-    <form id="calc-form" novalidate>
-      <label for="invested">Invested amount</label>
-      <input id="invested" name="invested" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 1000" required />
-      <label for="current">Current price (per unit)</label>
-      <input id="current" name="current" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 50" required />
-      <label for="target">Target price (per unit)</label>
-      <input id="target" name="target" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 65" required />
-    </form>
-    <div class="result" aria-live="polite">
-      <div class="result-label">Profit / loss</div>
-      <div id="profit-display" class="result-value neutral">—</div>
-      <div id="pct-display" class="result-pct neutral"></div>
-    </div>
-    <div class="result result-secondary" aria-live="polite">
-      <div class="result-label">Total value at target</div>
-      <div id="total-display" class="result-value neutral">—</div>
-    </div>
-    <div id="error-msg" class="error" hidden></div>
+    <p class="sub">Create coin instances, track multiple entries, and see live P/L at current and target prices.</p>
+    <div id="create-section"></div>
+    <div id="history-section"></div>
+    <div id="active-section"></div>
     <p class="formula">
       Formula:<br />
-      <code>((invested_amount ÷ current_price) × target_price) − invested_amount = profit</code>
+      <code>((invested ÷ entry_price) × price) − invested = profit</code>
     </p>
     <footer class="copyright">
       © <span id="cpy-year"></span> Made by Hridoy Mozumder.<br />
@@ -183,90 +201,412 @@
   </div>
   <script>
     (function () {
+      const STORAGE_KEY = "profit-calculator-coins";
+      const createSection = document.getElementById("create-section");
+      const historySection = document.getElementById("history-section");
+      const activeSection = document.getElementById("active-section");
       document.getElementById("cpy-year").textContent = new Date().getFullYear();
-      const investedEl = document.getElementById("invested");
-      const currentEl = document.getElementById("current");
-      const targetEl = document.getElementById("target");
-      const profitDisplay = document.getElementById("profit-display");
-      const pctDisplay = document.getElementById("pct-display");
-      const totalDisplay = document.getElementById("total-display");
-      const errorMsg = document.getElementById("error-msg");
 
-      function parseNum(el) {
-        const v = el.value.trim();
-        if (v === "") return NaN;
-        return Number(v);
+      function defaultState() {
+        return { coins: [], activeCoinId: null };
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return defaultState();
+          const parsed = JSON.parse(raw);
+          const coins = Array.isArray(parsed.coins) ? parsed.coins : [];
+          const validId = coins.some((c) => c.id === parsed.activeCoinId);
+          return {
+            coins,
+            activeCoinId: validId ? parsed.activeCoinId : coins[0]?.id || null
+          };
+        } catch {
+          return defaultState();
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (_) {}
+      }
+
+      function newId() {
+        return crypto.randomUUID();
+      }
+
+      function newEntry() {
+        return {
+          id: newId(),
+          invested: null,
+          entryPrice: null,
+          targetPrice: null,
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      function newCoin(name) {
+        return {
+          id: newId(),
+          name,
+          currentPrice: null,
+          createdAt: new Date().toISOString(),
+          entries: [newEntry()]
+        };
+      }
+
+      let state = loadState();
+
+      function parseInput(val) {
+        const v = String(val).trim();
+        if (v === "") return null;
+        const n = Number(v);
+        return Number.isNaN(n) ? null : n;
       }
 
       function formatMoney(n) {
-        return n.toLocaleString(undefined, {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        });
+        return n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
       }
 
-      function recalc() {
-        const invested = parseNum(investedEl);
-        const current = parseNum(currentEl);
-        const target = parseNum(targetEl);
+      function colorClass(profit) {
+        return profit > 0 ? "profit" : profit < 0 ? "loss" : "neutral";
+      }
 
-        errorMsg.hidden = true;
-        errorMsg.textContent = "";
-
-        if ([invested, current, target].some((x) => Number.isNaN(x))) {
-          profitDisplay.textContent = "—";
-          profitDisplay.className = "result-value neutral";
-          pctDisplay.textContent = "";
-          pctDisplay.className = "result-pct neutral";
-          totalDisplay.textContent = "—";
-          totalDisplay.className = "result-value neutral";
-          return;
+      function formatResult(data) {
+        if (!data.ok) {
+          return {
+            profitHtml: '<span class="result-value neutral">—</span>',
+            pctHtml: "",
+            totalHtml: "—"
+          };
         }
+        const sign = data.profit >= 0 ? "+" : "";
+        const cls = colorClass(data.profit);
+        return {
+          profitHtml: '<span class="result-value ' + cls + '">' + sign + formatMoney(data.profit) + "</span>",
+          pctHtml: '<div class="result-pct ' + cls + '">' + sign + data.pct.toFixed(2) + "%</div>",
+          totalHtml: formatMoney(data.totalValue)
+        };
+      }
 
-        if (invested < 0 || current < 0 || target < 0) {
-          errorMsg.textContent = "Values must be zero or positive.";
-          errorMsg.hidden = false;
-          profitDisplay.textContent = "—";
-          profitDisplay.className = "result-value neutral";
-          pctDisplay.textContent = "";
-          pctDisplay.className = "result-pct neutral";
-          totalDisplay.textContent = "—";
-          totalDisplay.className = "result-value neutral";
-          return;
+      function calcEntry(entry, price) {
+        const invested = entry.invested;
+        const entryPrice = entry.entryPrice;
+        if (invested === null || entryPrice === null || price === null) {
+          return { ok: false };
         }
-
-        if (current === 0) {
-          errorMsg.textContent = "Current price cannot be zero (cannot divide by zero).";
-          errorMsg.hidden = false;
-          profitDisplay.textContent = "—";
-          profitDisplay.className = "result-value neutral";
-          pctDisplay.textContent = "";
-          pctDisplay.className = "result-pct neutral";
-          totalDisplay.textContent = "—";
-          totalDisplay.className = "result-value neutral";
-          return;
+        if (invested < 0 || entryPrice < 0 || price < 0) {
+          return { ok: false, error: "Values must be zero or positive." };
         }
-
-        const profit = (invested / current) * target - invested;
+        if (entryPrice === 0) {
+          return { ok: false, error: "Entry price cannot be zero." };
+        }
+        const profit = (invested / entryPrice) * price - invested;
         const pct = invested > 0 ? (profit / invested) * 100 : 0;
-        const totalValue = invested + profit;
-        const sign = profit >= 0 ? "+" : "";
-        const colorClass = profit > 0 ? "profit" : profit < 0 ? "loss" : "neutral";
-
-        profitDisplay.textContent = sign + formatMoney(profit);
-        profitDisplay.className = "result-value " + colorClass;
-
-        pctDisplay.textContent = sign + pct.toFixed(2) + "%";
-        pctDisplay.className = "result-pct " + colorClass;
-
-        totalDisplay.textContent = formatMoney(totalValue);
-        totalDisplay.className = "result-value " + colorClass;
+        return { ok: true, profit, pct, totalValue: invested + profit };
       }
 
-      [investedEl, currentEl, targetEl].forEach((el) => {
-        el.addEventListener("input", recalc);
-        el.addEventListener("change", recalc);
+      function calcAggregates(coin) {
+        let totalInvested = 0;
+        let profitCurrent = 0;
+        let profitTarget = 0;
+        let hasCurrent = false;
+        let hasTarget = false;
+        for (const entry of coin.entries) {
+          if (entry.invested !== null) totalInvested += entry.invested;
+          const cur = calcEntry(entry, coin.currentPrice);
+          const tgt = calcEntry(entry, entry.targetPrice);
+          if (cur.ok) { profitCurrent += cur.profit; hasCurrent = true; }
+          if (tgt.ok) { profitTarget += tgt.profit; hasTarget = true; }
+        }
+        return {
+          totalInvested,
+          profitCurrent: hasCurrent ? profitCurrent : null,
+          pctCurrent: hasCurrent && totalInvested > 0 ? (profitCurrent / totalInvested) * 100 : null,
+          profitTarget: hasTarget ? profitTarget : null,
+          pctTarget: hasTarget && totalInvested > 0 ? (profitTarget / totalInvested) * 100 : null
+        };
+      }
+
+      function formatDate(iso) {
+        return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+      }
+
+      function getActiveCoin() {
+        return state.coins.find((c) => c.id === state.activeCoinId) || null;
+      }
+
+      function inputVal(n) {
+        return n === null ? "" : String(n);
+      }
+
+      function renderCreate() {
+        createSection.innerHTML =
+          '<div class="section" style="margin-top:0;padding-top:0;border-top:none">' +
+          '<div class="section-title">Create coin instance</div>' +
+          '<div class="create-row">' +
+          '<input type="text" id="coin-name-input" placeholder="e.g. BTC" maxlength="50" />' +
+          '<button type="button" class="btn" data-action="create-coin">Create</button>' +
+          "</div></div>";
+      }
+
+      function renderHistory() {
+        let html = '<div class="section"><div class="section-title">Coin history</div>';
+        if (state.coins.length === 0) {
+          html += '<p class="empty-msg">No coins yet. Create one above.</p>';
+        } else {
+          html += '<div class="coin-list">';
+          for (const coin of state.coins) {
+            const active = coin.id === state.activeCoinId ? " active" : "";
+            html +=
+              '<div class="coin-item' + active + '" data-action="select-coin" data-coin-id="' + coin.id + '">' +
+              '<div class="coin-item-info">' +
+              '<div class="coin-item-name">' + escapeHtml(coin.name) + "</div>" +
+              '<div class="coin-item-meta">' + formatDate(coin.createdAt) + " · " + coin.entries.length + " instance" + (coin.entries.length !== 1 ? "s" : "") + "</div>" +
+              "</div>" +
+              '<button type="button" class="btn-danger" data-action="delete-coin" data-coin-id="' + coin.id + '">Delete</button>' +
+              "</div>";
+          }
+          html += "</div>";
+        }
+        html += "</div>";
+        historySection.innerHTML = html;
+      }
+
+      function renderEntry(coin, entry, index) {
+        const cur = calcEntry(entry, coin.currentPrice);
+        const tgt = calcEntry(entry, entry.targetPrice);
+        const curFmt = formatResult(cur);
+        const tgtFmt = formatResult(tgt);
+        const err = (!cur.ok && cur.error) || (!tgt.ok && tgt.error) || "";
+        const canDelete = coin.entries.length > 1;
+
+        return (
+          '<div class="entry-row" data-entry-id="' + entry.id + '">' +
+          '<div class="entry-header">' +
+          '<span class="entry-title">Instance ' + (index + 1) + " · " + formatDate(entry.createdAt) + "</span>" +
+          (canDelete ? '<button type="button" class="btn-danger" data-action="delete-entry" data-entry-id="' + entry.id + '">Remove</button>' : "") +
+          "</div>" +
+          '<div class="entry-fields">' +
+          '<div><label>Invested amount</label><input type="number" data-field="invested" data-entry-id="' + entry.id + '" inputmode="decimal" min="0" step="any" placeholder="e.g. 1000" value="' + inputVal(entry.invested) + '" /></div>' +
+          '<div><label>Entry price</label><input type="number" data-field="entryPrice" data-entry-id="' + entry.id + '" inputmode="decimal" min="0" step="any" placeholder="e.g. 50" value="' + inputVal(entry.entryPrice) + '" /></div>' +
+          '<div><label>Target price</label><input type="number" data-field="targetPrice" data-entry-id="' + entry.id + '" inputmode="decimal" min="0" step="any" placeholder="e.g. 65" value="' + inputVal(entry.targetPrice) + '" /></div>' +
+          "</div>" +
+          (err ? '<div class="entry-error">' + escapeHtml(err) + "</div>" : "") +
+          '<div class="entry-results">' +
+          '<div class="result result-compact" data-result="current" data-entry-id="' + entry.id + '">' +
+          '<div class="result-label">At current</div>' +
+          curFmt.profitHtml + curFmt.pctHtml +
+          '<div class="result-total">Total: ' + curFmt.totalHtml + "</div>" +
+          "</div>" +
+          '<div class="result result-compact" data-result="target" data-entry-id="' + entry.id + '">' +
+          '<div class="result-label">At target</div>' +
+          tgtFmt.profitHtml + tgtFmt.pctHtml +
+          '<div class="result-total">Total: ' + tgtFmt.totalHtml + "</div>" +
+          "</div></div></div>"
+        );
+      }
+
+      function renderTotals(coin) {
+        const agg = calcAggregates(coin);
+        function aggBlock(label, profit, pct) {
+          if (profit === null) {
+            return '<div class="result result-compact"><div class="result-label">' + label + '</div><span class="result-value neutral">—</span></div>';
+          }
+          const sign = profit >= 0 ? "+" : "";
+          const cls = colorClass(profit);
+          const pctStr = pct !== null ? '<div class="result-pct ' + cls + '">' + sign + pct.toFixed(2) + "%</div>" : "";
+          return (
+            '<div class="result result-compact">' +
+            '<div class="result-label">' + label + "</div>" +
+            '<span class="result-value ' + cls + '">' + sign + formatMoney(profit) + "</span>" +
+            pctStr +
+            '<div class="result-total">Invested: ' + formatMoney(agg.totalInvested) + "</div>" +
+            "</div>"
+          );
+        }
+        return (
+          '<div class="totals"><div class="section-title">Combined totals</div>' +
+          '<div class="totals-grid">' +
+          aggBlock("At current", agg.profitCurrent, agg.pctCurrent) +
+          aggBlock("At target", agg.profitTarget, agg.pctTarget) +
+          "</div></div>"
+        );
+      }
+
+      function renderActive() {
+        const coin = getActiveCoin();
+        if (!coin) {
+          activeSection.innerHTML = "";
+          return;
+        }
+        let html =
+          '<div class="section">' +
+          '<div class="active-header">' +
+          '<h2 class="active-coin-name">' + escapeHtml(coin.name) + "</h2>" +
+          "</div>" +
+          '<label for="current-price">Current price (global)</label>' +
+          '<input type="number" id="current-price" data-field="currentPrice" inputmode="decimal" min="0" step="any" placeholder="e.g. 55" value="' + inputVal(coin.currentPrice) + '" />' +
+          '<div class="section-title">Entry instances</div>';
+        coin.entries.forEach((entry, i) => { html += renderEntry(coin, entry, i); });
+        html +=
+          '<button type="button" class="btn" data-action="add-entry">Add instance</button>' +
+          renderTotals(coin) +
+          "</div>";
+        activeSection.innerHTML = html;
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function render() {
+        renderCreate();
+        renderHistory();
+        renderActive();
+      }
+
+      function updateEntryResults(coin, entry) {
+        const cur = calcEntry(entry, coin.currentPrice);
+        const tgt = calcEntry(entry, entry.targetPrice);
+        const curFmt = formatResult(cur);
+        const tgtFmt = formatResult(tgt);
+        const row = activeSection.querySelector('[data-entry-id="' + entry.id + '"].entry-row');
+        if (!row) return;
+        const errEl = row.querySelector(".entry-error");
+        const err = (!cur.ok && cur.error) || (!tgt.ok && tgt.error) || "";
+        if (err) {
+          if (!errEl) {
+            const el = document.createElement("div");
+            el.className = "entry-error";
+            el.textContent = err;
+            row.querySelector(".entry-fields").after(el);
+          } else {
+            errEl.textContent = err;
+          }
+        } else if (errEl) {
+          errEl.remove();
+        }
+        const curBox = row.querySelector('[data-result="current"]');
+        const tgtBox = row.querySelector('[data-result="target"]');
+        if (curBox) {
+          curBox.innerHTML = '<div class="result-label">At current</div>' + curFmt.profitHtml + curFmt.pctHtml + '<div class="result-total">Total: ' + curFmt.totalHtml + "</div>";
+        }
+        if (tgtBox) {
+          tgtBox.innerHTML = '<div class="result-label">At target</div>' + tgtFmt.profitHtml + tgtFmt.pctHtml + '<div class="result-total">Total: ' + tgtFmt.totalHtml + "</div>";
+        }
+      }
+
+      function updateTotals() {
+        const coin = getActiveCoin();
+        if (!coin) return;
+        const totalsEl = activeSection.querySelector(".totals");
+        if (totalsEl) {
+          const tmp = document.createElement("div");
+          tmp.innerHTML = renderTotals(coin);
+          totalsEl.replaceWith(tmp.firstElementChild);
+        }
+      }
+
+      function updateAllEntryResults() {
+        const coin = getActiveCoin();
+        if (!coin) return;
+        coin.entries.forEach((entry) => updateEntryResults(coin, entry));
+        updateTotals();
+      }
+
+      document.getElementById("app").addEventListener("click", function (e) {
+        const btn = e.target.closest("[data-action]");
+        if (!btn) return;
+        const action = btn.dataset.action;
+
+        if (action === "create-coin") {
+          const input = document.getElementById("coin-name-input");
+          const name = input.value.trim();
+          if (!name) return;
+          const coin = newCoin(name);
+          state.coins.unshift(coin);
+          state.activeCoinId = coin.id;
+          saveState();
+          render();
+          return;
+        }
+
+        if (action === "select-coin") {
+          if (e.target.closest("[data-action=delete-coin]")) return;
+          state.activeCoinId = btn.dataset.coinId;
+          saveState();
+          renderHistory();
+          renderActive();
+          return;
+        }
+
+        if (action === "delete-coin") {
+          e.stopPropagation();
+          const id = btn.dataset.coinId;
+          const coin = state.coins.find((c) => c.id === id);
+          if (!coin || !confirm('Delete "' + coin.name + '" and all its instances?')) return;
+          state.coins = state.coins.filter((c) => c.id !== id);
+          if (state.activeCoinId === id) {
+            state.activeCoinId = state.coins[0]?.id || null;
+          }
+          saveState();
+          render();
+          return;
+        }
+
+        if (action === "delete-entry") {
+          const coin = getActiveCoin();
+          if (!coin || coin.entries.length <= 1) return;
+          const entryId = btn.dataset.entryId;
+          if (!confirm("Remove this instance?")) return;
+          coin.entries = coin.entries.filter((en) => en.id !== entryId);
+          saveState();
+          renderActive();
+          renderHistory();
+          return;
+        }
+
+        if (action === "add-entry") {
+          const coin = getActiveCoin();
+          if (!coin) return;
+          coin.entries.push(newEntry());
+          saveState();
+          renderActive();
+          renderHistory();
+          return;
+        }
       });
+
+      document.getElementById("app").addEventListener("input", function (e) {
+        const el = e.target;
+        const field = el.dataset.field;
+        if (!field) return;
+
+        if (field === "currentPrice") {
+          const coin = getActiveCoin();
+          if (!coin) return;
+          coin.currentPrice = parseInput(el.value);
+          saveState();
+          updateAllEntryResults();
+          return;
+        }
+
+        const entryId = el.dataset.entryId;
+        if (!entryId) return;
+        const coin = getActiveCoin();
+        if (!coin) return;
+        const entry = coin.entries.find((en) => en.id === entryId);
+        if (!entry) return;
+        entry[field] = parseInput(el.value);
+        saveState();
+        updateEntryResults(coin, entry);
+        updateTotals();
+      });
+
+      render();
     })();
   </script>
 </body>
